@@ -1,0 +1,7 @@
+{
+  "name": "@generates/roll-logtail",
+  "version": "0.0.0",
+  "license": "UNLICENSED",
+  "type": "module",
+  "main": "index.js"
+}

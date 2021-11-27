@@ -1,0 +1,6 @@
+{
+  "private": true,
+  "name": "bench",
+  "version": "0.0.0",
+  "type": "module"
+}

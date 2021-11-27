@@ -1,0 +1,29 @@
+{
+  "private": true,
+  "name": "roll",
+  "version": "0.0.0",
+  "license": "UNLICENSED",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "lint": "eslint .",
+    "test": "mr test"
+  },
+  "devDependencies": {
+    "@generates/mister": "^0.0.4",
+    "@ianwalter/eslint-config": "^7.1.0",
+    "@ianwalter/renovate-config": "^1.4.6"
+  },
+  "eslintConfig": {
+    "root": true,
+    "extends": [
+      "@ianwalter"
+    ]
+  },
+  "renovate": {
+    "extends": [
+      "@ianwalter"
+    ]
+  }
+}
