@@ -11,6 +11,7 @@
     "test": "mr test"
   },
   "devDependencies": {
+    "@changesets/cli": "^2.18.1",
     "@generates/mister": "^0.0.4",
     "@ianwalter/eslint-config": "^7.1.0",
     "@ianwalter/renovate-config": "^1.4.6"
