@@ -1,9 +1,14 @@
 import { merge } from '@generates/merger'
+import _stringify from './lib/stringify.js'
+
+export const stringify = _stringify
 
 const defaults = {
   level: 'info',
   stdout: process.stdout.write.bind(process.stdout),
-  collectors: false
+  collectors: false,
+  ndjson: false,
+  pretty: !process.env.NODE_ENV && process.stdout.isTTY
 }
 
 export const types = [
@@ -42,6 +47,29 @@ export const roll = {
     if (opts.types) addTypes(logger, opts.types)
 
     //
+    if (opts.collectors) {
+      const imports = []
+      const opts = []
+      this.collectors = []
+      for (const c of opts.collectors) {
+        if (c.collector.then) {
+          imports.push(c.collector)
+          opts.push(c.opts)
+        } else {
+          this.collectors.push(c.collector(c.opts))
+        }
+      }
+      if (imports.length) {
+        return Promise.all(imports).then(collectors => {
+          for (const [index, collector] of collectors.entries()) {
+            this.collectors.push(collector(opts[index]))
+          }
+          return logger
+        })
+      }
+    }
+
+    //
     return logger
   },
   ns (name, options) {
@@ -51,16 +79,56 @@ export const roll = {
     //
     return this.create(options)
   },
-  out (type, items) {
-    let message
-    if (this.opts.stdout || this.collectors) {
-      message = items[0] + '\n'
+  getLog (items) {
+    const log = {}
+    for (const item of items) {
+      if (typeof item === 'string' && !log.message) {
+        //
+        log.message = item
+      } else if (item instanceof Error) {
+        //
+        log.isError = true
+
+        if (log.message) {
+          //
+          log.error = item.stack
+        } else {
+          //
+          log.message = item.stack
+        }
+      } else if (typeof item === 'object') {
+        merge(log, item)
+      }
     }
-    if (this.collectors) {
+    return log
+  },
+  getOutput (type, items) {
+    const { message, ...log } = this.getLog(items)
+    if (this.opts.ndjson) {
+      return JSON.stringify({
+        ...this.namespace ? { namespace: this.namespace } : {},
+        type: type.type,
+        level: type.level,
+        message,
+        ...log
+      })
+    } else if (this.opts.pretty) {
       // TODO:
+      return '  ' + message + '\n' + '  ' + stringify(log, undefined, '  ') + '\n'
+    }
+    // TODO:
+    return message + '\n'
+  },
+  out (type, items) {
+    if (this.collectors) {
+      const log = this.getLog(items)
+      for (const collector of this.collectors) collector(log)
     }
     if (this.opts.stdout) {
-      return new Promise(resolve => this.opts.stdout(message, resolve))
+      const output = this.getOutput(type, items)
+      if (output) {
+        return new Promise(resolve => this.opts.stdout(output, resolve))
+      }
     }
   }
 }
