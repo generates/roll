@@ -3,5 +3,19 @@
   "version": "0.0.0",
   "license": "UNLICENSED",
   "type": "module",
-  "main": "index.js"
+  "main": "index.js",
+  "scripts": {
+    "test": "bff",
+    "example.hello": "../../example.js ./tests/fixtures/hello.js",
+    "example.error": "../../example.js ./tests/fixtures/error.js",
+    "example.data": "../../example.js ./tests/fixtures/data.js"
+  },
+  "devDependencies": {
+    "@ianwalter/bff": "^11.2.2"
+  },
+  "dependencies": {
+    "@generates/number-lines": "^0.0.1",
+    "chalk": "^5.0.0",
+    "emphasize": "^5.0.0"
+  }
 }

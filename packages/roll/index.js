@@ -1,8 +1,11 @@
 import { merge } from '@generates/merger'
 import _stringify from './lib/stringify.js'
+import _prettify from './lib/prettify.js'
 
 export const stringify = _stringify
+export const prettify = _prettify
 
+const nlRe = /\n(\s+)?/g
 const defaults = {
   level: 'info',
   stdout: process.stdout.write.bind(process.stdout),
@@ -86,18 +89,23 @@ export const roll = {
         //
         log.message = item
       } else if (item instanceof Error) {
+        const { stack, ...err } = item
+
         //
         log.isError = true
 
         if (log.message) {
           //
-          log.error = item.stack
+          log.error = stack
         } else {
           //
-          log.message = item.stack
+          log.message = stack
         }
+
+        //
+        log.data = merge(log.data || {}, err)
       } else if (typeof item === 'object') {
-        merge(log, item)
+        log.data = merge(log.data || {}, item)
       }
     }
     return log
@@ -113,11 +121,18 @@ export const roll = {
         ...log
       })
     } else if (this.opts.pretty) {
-      // TODO:
-      return '  ' + message + '\n' + '  ' + stringify(log, undefined, '  ') + '\n'
+      // TODO: Swap stringify for prettify.
+      // TODO: Modify prettify to rewrite message if from error.
+      let output = '    ' + message + '\n'
+      if (log.data) output += prettify(log.data) + '\n'
+      return output
     }
     // TODO:
-    return message + '\n'
+    let output = message.replace(nlRe, ' ')
+    if (log.data) {
+      output += ' ' + stringify(log.data, undefined, '').replace(nlRe, ' ')
+    }
+    return output + '\n'
   },
   out (type, items) {
     let log
