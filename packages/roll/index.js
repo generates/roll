@@ -120,16 +120,20 @@ export const roll = {
     return message + '\n'
   },
   out (type, items) {
+    let log
     if (this.collectors) {
-      const log = this.getLog(items)
+      log = this.getLog(items)
       for (const collector of this.collectors) collector(log)
     }
     if (this.opts.stdout) {
       const output = this.getOutput(type, items)
       if (output) {
-        return new Promise(resolve => this.opts.stdout(output, resolve))
+        return new Promise(resolve => this.opts.stdout(output, () => {
+          resolve(output)
+        }))
       }
     }
+    return log
   }
 }
 
