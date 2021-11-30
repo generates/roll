@@ -1,5 +1,5 @@
 import { emphasize } from 'emphasize'
-import chalk from 'chalk'
+import kleur from 'kleur'
 import stringify from './stringify.js'
 import { numberLines } from '@generates/number-lines'
 
@@ -8,7 +8,7 @@ const defaultOptions = {
   lineNumbers: true,
   indent: '  '
 }
-const formatLineNumber = lineNumber => '    ' + chalk.dim(lineNumber)
+const formatLineNumber = lineNumber => '    ' + kleur.dim(lineNumber)
 
 export default function prettify (value, options = defaultOptions) {
   if (typeof value === 'object') {
@@ -17,10 +17,10 @@ export default function prettify (value, options = defaultOptions) {
   if (options.highlight) {
     const res = emphasize.highlight('javascript', value)
     value = res.value
-
-    if (options.lineNumbers) {
-      value = numberLines(value.split('\n'), formatLineNumber).join('\n')
-    }
   }
+  if (options.lineNumbers) {
+    value = numberLines(value.split('\n'), formatLineNumber).join('\n')
+  }
+
   return value
 }

@@ -2,11 +2,11 @@
 
 import http from 'http'
 import winston from 'winston'
-import rollSentry from '@generates/roll-sentry'
+import rollLogzio from '@generates/roll-logzio'
 
 const logger = winston.createLogger({
   transports: [
-    rollSentry()
+    rollLogzio()
   ]
 })
 

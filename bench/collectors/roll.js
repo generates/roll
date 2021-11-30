@@ -2,12 +2,12 @@
 
 import http from 'http'
 import { roll } from '@generates/roll'
+import rollLogzio from '@generates/roll-logzio'
 
 const logger = roll.create({
   stdout: false,
   collectors: [
-    { collector: import('@generates/roll-sentry'), opts: { level: 'error' } },
-    { collector: import('@generates/roll-logtail') }
+    { collector: rollLogzio }
   ]
 })
 

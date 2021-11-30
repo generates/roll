@@ -28,7 +28,7 @@ export const types = [
   // For normal errors.
   { type: 'error', level: 'error', prefix: '🚫', style: ['red', 'bold'] },
   // For unrecoverable errors.
-  { type: 'fatal', level: 'fatal', prefix: '💀', style: ['red', 'bold'] }
+  { type: 'fatal', level: 'error', prefix: '💀', style: ['red', 'bold'] }
 ]
 
 export function addTypes (logger, typesToAdd = types) {
@@ -52,20 +52,20 @@ export const roll = {
     //
     if (opts.collectors) {
       const imports = []
-      const opts = []
-      this.collectors = []
+      const importsOpts = []
+      logger.collectors = []
       for (const c of opts.collectors) {
         if (c.collector.then) {
           imports.push(c.collector)
-          opts.push(c.opts)
+          importsOpts.push(c.opts)
         } else {
-          this.collectors.push(c.collector(c.opts))
+          logger.collectors.push(c.collector(c.opts))
         }
       }
       if (imports.length) {
         return Promise.all(imports).then(collectors => {
           for (const [index, collector] of collectors.entries()) {
-            this.collectors.push(collector(opts[index]))
+            logger.collectors.push(collector(importsOpts[index]))
           }
           return logger
         })
@@ -82,8 +82,8 @@ export const roll = {
     //
     return this.create(options)
   },
-  getLog (items) {
-    const log = {}
+  getLog (type, items) {
+    const log = { type: type.type, level: type.level }
     for (const item of items) {
       if (typeof item === 'string' && !log.message) {
         //
@@ -111,17 +111,14 @@ export const roll = {
     return log
   },
   getOutput (type, items) {
-    const { message, ...log } = this.getLog(items)
+    const { message, ...log } = this.getLog(type, items)
     if (this.opts.ndjson) {
       return JSON.stringify({
         ...this.namespace ? { namespace: this.namespace } : {},
-        type: type.type,
-        level: type.level,
         message,
         ...log
       })
     } else if (this.opts.pretty) {
-      // TODO: Swap stringify for prettify.
       // TODO: Modify prettify to rewrite message if from error.
       let output = '    ' + message + '\n'
       if (log.data) output += prettify(log.data) + '\n'
@@ -137,7 +134,7 @@ export const roll = {
   out (type, items) {
     let log
     if (this.collectors) {
-      log = this.getLog(items)
+      log = this.getLog(type, items)
       for (const collector of this.collectors) collector(log)
     }
     if (this.opts.stdout) {
