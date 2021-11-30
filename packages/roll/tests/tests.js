@@ -12,7 +12,10 @@ test('Log info string to stdout', t => {
 
 test('Log error to stdout', t => {
   const logger = roll.create({
-    stdout: output => t.expect(output).toMatchSnapshot()
+    stdout: output => {
+      t.expect(output).toContain('Woke up with my toolie what it do at default')
+      t.expect(output).toContain('packages/roll/tests/fixtures/error.js:2:15')
+    }
   })
   error(logger)
 })

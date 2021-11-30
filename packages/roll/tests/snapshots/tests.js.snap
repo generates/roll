@@ -1,10 +1,5 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Log error to stdout 1`] = `
-"Error: Woke up with my toolie what it do at default (file:///Users/ian/generates/roll/packages/roll/tests/fixtures/error.js:2:15) at file:///Users/ian/generates/roll/packages/roll/tests/tests.js:17:3 at file:///Users/ian/generates/roll/node_modules/@ianwalter/bff/lib/runTest.js:26:26 at new Promise (<anonymous>) at runTest (file:///Users/ian/generates/roll/node_modules/@ianwalter/bff/lib/runTest.js:24:7) at AsyncFunction.test (file:///Users/ian/generates/roll/node_modules/@ianwalter/bff/worker.js:137:15) { where: 'Alley', with: 'The troops' }
-"
-`;
-
 exports[`Log info string to stdout 1`] = `
 "Hello World
 "
