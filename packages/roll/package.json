@@ -10,6 +10,9 @@
     "example.error": "../../example.js ./tests/fixtures/error.js",
     "example.data": "../../example.js ./tests/fixtures/data.js"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "devDependencies": {
     "@ianwalter/bff": "^11.2.2"
   },
