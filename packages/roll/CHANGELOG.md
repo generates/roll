@@ -1,5 +1,11 @@
 # @generates/roll
 
+## 0.2.1
+
+### Patch Changes
+
+- 5bf5338: Uncomment log type
+
 ## 0.2.0
 
 ### Minor Changes
