@@ -27,7 +27,7 @@ export const types = [
   // For standard log statements.
   { type: 'info', level: 'info', prefix: '💁', style: ['cyan', 'bold'] },
   // For general log statements in which you can customize the emoji.
-  // { type: 'log', level: 'info', prefix: extractLogPrefix },
+  { type: 'log', level: 'info', prefix: false },
   // For log statements indicating a successful operation.
   { type: 'success', level: 'info', prefix: '✅', style: ['green', 'bold'] },
   // For the gray area between info and error.
