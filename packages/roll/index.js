@@ -2,6 +2,7 @@ import { merge } from '@generates/merger'
 import _stringify from './lib/stringify.js'
 import _prettify from './lib/prettify.js'
 
+export { default as kleur } from 'kleur'
 export const stringify = _stringify
 export const prettify = _prettify
 
