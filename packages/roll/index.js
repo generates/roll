@@ -47,16 +47,33 @@ export function addTypes (logger, typesToAdd = types) {
   }
 }
 
+export function mergeExtra (items) {
+  const data = {}
+  for (const item of items) {
+    if (typeof item === 'string') {
+      if (data.messages) {
+        data.messages.push(item)
+      } else {
+        data.messages = [item]
+      }
+    } else if (typeof item === 'object') {
+      merge(data, item)
+    }
+  }
+  return data
+}
+
 export const roll = {
   opts: merge({}, defaults),
   create (opts = {}) {
-    //
+    // Create a new logger instance by merging the current logger with the
+    // passed options.
     const logger = merge({}, this, { opts })
 
-    //
+    // If different log types were passed, add them to the logger.
     if (opts.types) addTypes(logger, opts.types)
 
-    //
+    // If collectors were passed, add them into the logger's collectors array.
     if (opts.collectors) {
       const imports = []
       const importsOpts = []
@@ -69,6 +86,8 @@ export const roll = {
           logger.collectors.push(c.collector(c.opts))
         }
       }
+
+      // Return a promise if the collector imports are dynamic.
       if (imports.length) {
         return Promise.all(imports).then(collectors => {
           for (const [index, collector] of collectors.entries()) {
@@ -79,62 +98,86 @@ export const roll = {
       }
     }
 
-    //
     return logger
   },
-  ns (name, options) {
-    //
-    this.namespace = name
-
-    //
-    return this.create(options)
+  ns (namespace, options) {
+    return this.create({ namespace, ...options })
   },
   getLog (type, items) {
     const log = { type: type.type, level: type.level }
     for (const item of items) {
-      if (typeof item === 'string' && !log.message) {
-        //
-        log.message = item
+      if (typeof item === 'string') {
+        if (log.message) {
+          if (log.extra) {
+            log.extra.push(item)
+          } else {
+            log.extra = [item]
+          }
+        } else {
+          log.message = item
+        }
       } else if (item instanceof Error) {
         const { stack, ...err } = item
 
-        //
-        log.isError = true
-
         if (log.message) {
-          //
+          // If there is already a log message, add the error stack to an
+          // 'error' property.
           log.error = stack
         } else {
-          //
+          // Use the error stack as the log message.
           log.message = stack
         }
 
-        //
-        log.data = merge(log.data || {}, err)
+        // If there are additional properties from the error, add them to the
+        // extra array on the log object.
+        if (Object.keys(err).length) {
+          if (log.extra) {
+            log.extra.push(err)
+          } else {
+            log.extra = [err]
+          }
+        }
       } else if (typeof item === 'object') {
-        log.data = merge(log.data || {}, item)
+        if (log.extra) {
+          log.extra.push(item)
+        } else {
+          log.extra = [item]
+        }
       }
     }
     return log
   },
   getOutput (type, items) {
-    const { message, ...log } = this.getLog(type, items)
+    const { message, extra, ...log } = this.getLog(type, items)
     if (this.opts.ndjson) {
       return JSON.stringify({
-        ...this.namespace ? { namespace: this.namespace } : {},
+        ...this.opts.namespace ? { namespace: this.opts.namespace } : {},
         message,
-        ...log
+        ...log,
+        ...extra ? { data: mergeExtra(extra) } : {}
       })
     } else if (this.opts.pretty) {
-      // TODO: Modify prettify to rewrite message if from error.
       let output = '    ' + message + '\n'
-      if (log.data) output += prettify(log.data) + '\n'
+      if (extra) {
+        for (const item of extra) {
+          if (typeof item === 'string') {
+            output += '    ' + item + '\n'
+          } else if (typeof item === 'object') {
+            output += prettify(item) + '\n'
+          }
+        }
+      }
       return output
     }
-    // TODO:
     let output = message.replace(nlRe, ' ')
-    if (log.data) {
-      output += ' ' + stringify(log.data, undefined, '').replace(nlRe, ' ')
+    if (extra) {
+      for (const item of extra) {
+        if (typeof item === 'string') {
+          output += item + ' '
+        } else if (typeof item === 'object') {
+          output += stringify(item, undefined, '').replace(nlRe, ' ')
+        }
+      }
     }
     return output + '\n'
   },

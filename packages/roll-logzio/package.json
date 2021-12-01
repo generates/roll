@@ -10,6 +10,9 @@
   "publishConfig": {
     "access": "public"
   },
+  "peerDependencies": {
+    "@generates/roll": "*"
+  },
   "dependencies": {
     "@generates/merger": "^0.1.3",
     "logzio-nodejs": "^2.0.3"
