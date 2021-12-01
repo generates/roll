@@ -5,6 +5,12 @@ import _prettify from './lib/prettify.js'
 export const stringify = _stringify
 export const prettify = _prettify
 
+const levels = [
+  'debug',
+  'info',
+  'warn',
+  'error'
+]
 const nlRe = /\n(\s+)?/g
 const defaults = {
   level: 'info',
@@ -132,20 +138,24 @@ export const roll = {
     return output + '\n'
   },
   out (type, items) {
-    let log
-    if (this.collectors) {
-      log = this.getLog(type, items)
-      for (const collector of this.collectors) collector(log)
-    }
-    if (this.opts.stdout) {
-      const output = this.getOutput(type, items)
-      if (output) {
-        return new Promise(resolve => this.opts.stdout(output, () => {
-          resolve(output)
-        }))
+    const index = levels.indexOf(type.level)
+    const optIndex = levels.indexOf(this.opts.level)
+    if (index >= optIndex) {
+      let log
+      if (this.collectors) {
+        log = this.getLog(type, items)
+        for (const collector of this.collectors) collector(log)
       }
+      if (this.opts.stdout) {
+        const output = this.getOutput(type, items)
+        if (output) {
+          return new Promise(resolve => this.opts.stdout(output, () => {
+            resolve(output)
+          }))
+        }
+      }
+      return log
     }
-    return log
   }
 }
 

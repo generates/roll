@@ -1,4 +1,9 @@
 import logzio from 'logzio-nodejs'
+import { merge } from '@generates/merger'
+
+const defaults = {
+  sendAndClose: true
+}
 
 const logger = logzio.createLogger({
   token: process.env.LOGZIO_TOKEN,
@@ -7,9 +12,10 @@ const logger = logzio.createLogger({
   port: '8071'
 })
 
-export default function logzioCollector () {
+export default function logzioCollector (opts) {
+  this.opts = merge({}, defaults, opts)
   return function logzioCollect (log) {
     logger.log(log)
-    logger.sendAndClose()
+    if (this.opts.sendAndClose) logger.sendAndClose()
   }
 }
