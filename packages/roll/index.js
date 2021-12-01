@@ -49,7 +49,7 @@ export function addTypes (logger, typesToAdd = types) {
 
 export const roll = {
   opts: merge({}, defaults),
-  create (opts) {
+  create (opts = {}) {
     //
     const logger = merge({}, this, { opts })
 
