@@ -1,5 +1,12 @@
 # @generates/roll-logzio
 
+## 2.0.0
+
+### Patch Changes
+
+- Updated dependencies [db9afab]
+  - @generates/roll@0.4.0
+
 ## 1.0.0
 
 ### Minor Changes

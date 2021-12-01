@@ -1,5 +1,11 @@
 # @generates/roll
 
+## 0.4.0
+
+### Minor Changes
+
+- db9afab: Improving pretty printing of extra items
+
 ## 0.3.0
 
 ### Minor Changes
