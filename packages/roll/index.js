@@ -157,25 +157,30 @@ export const roll = {
         ...extra ? { data: mergeExtra(extra) } : {}
       })
     } else if (this.opts.pretty) {
-      let output = '    ' + message + '\n'
+      let output = '    ' + message
       if (extra) {
+        let indentRequired
         for (const item of extra) {
           if (typeof item === 'string') {
-            output += '    ' + item + '\n'
+            output += indentRequired ? '    ' : ' '
+            output += item
+            indentRequired = false
           } else if (typeof item === 'object') {
+            if (!indentRequired) output += '\n'
             output += prettify(item) + '\n'
+            indentRequired = true
           }
         }
       }
-      return output
+      return output + '\n'
     }
     let output = message.replace(nlRe, ' ')
     if (extra) {
       for (const item of extra) {
         if (typeof item === 'string') {
-          output += item + ' '
+          output += ' ' + item
         } else if (typeof item === 'object') {
-          output += stringify(item, undefined, '').replace(nlRe, ' ')
+          output += ' ' + stringify(item, undefined, '').replace(nlRe, ' ')
         }
       }
     }
