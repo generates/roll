@@ -1,5 +1,15 @@
 # @generates/roll
 
+## 0.3.0
+
+### Minor Changes
+
+- 17771a8: Adding mergeExtra function
+
+### Patch Changes
+
+- 6d454b9: Fixing opts issue
+
 ## 0.2.1
 
 ### Patch Changes
