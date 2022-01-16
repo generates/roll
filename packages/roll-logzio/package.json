@@ -18,6 +18,6 @@
     "logzio-nodejs": "^2.0.3"
   },
   "devDependencies": {
-    "dotenv": "^10.0.0"
+    "dotenv": "^12.0.4"
   }
 }
