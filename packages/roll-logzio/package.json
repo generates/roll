@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "@generates/merger": "^0.1.3",
-    "logzio-nodejs": "^2.0.3"
+    "logzio-nodejs": "^2.1.5"
   },
   "devDependencies": {
     "dotenv": "^10.0.0"
